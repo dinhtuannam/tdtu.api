@@ -2,7 +2,7 @@
 
 public class BaseRequest 
 {
-	public string? Code { get; set; }
+	public Guid? Id { get; set; }
 	public string? TextSearch { get; set; }
 	public string? OrderCol { get; set; }
 	public string? OrderDir { get; set; }

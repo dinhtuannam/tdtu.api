@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using TDTU.API.Dtos.UserDTO;
 
-namespace TDTU.API.Dtos.CompanyDto;
+namespace TDTU.API.Dtos.CompanyDTO;
 
 public class CompanyDto : UserDto
 {

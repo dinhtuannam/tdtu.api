@@ -1,4 +1,4 @@
-﻿using TDTU.API.Dtos.CompanyDto;
+﻿using TDTU.API.Dtos.CompanyDTO;
 using TDTU.API.Models.CompanyModel;
 
 namespace TDTU.API.Interfaces;

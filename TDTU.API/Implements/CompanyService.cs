@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using TDTU.API.Dtos.CompanyDto;
+using TDTU.API.Dtos.CompanyDTO;
 using TDTU.API.Models.CompanyModel;
 using Udemy.Application.Commons.Mappings;
 

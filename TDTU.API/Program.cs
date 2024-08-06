@@ -108,6 +108,7 @@ namespace TDTU.API
 			#region Service
 			builder.Services.AddScoped<IStorageService, StorageService>();
 			builder.Services.AddScoped<IUserService, UserService>();
+			builder.Services.AddScoped<IRegularJobService, RegularJobService>();
 			builder.Services.AddScoped<ICompanyService, CompanyService>();
 			builder.Services.AddScoped<IDataContext>(provider => provider.GetRequiredService<DataContext>());
 			builder.Services.AddTransient<IDataContextInitializer, DataContextInitializer>();
