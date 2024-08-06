@@ -9,3 +9,10 @@ public class Role : BaseStatusEntity
 	public string Description { get; set; } = string.Empty;
 	public ICollection<User>? Users { set; get; }
 }
+
+public static class RoleConstant
+{
+	public static string Student { get; } = nameof(Student).ToUpper();
+	public static string Admin { get; } = nameof(Admin).ToUpper();
+	public static string Company { get; } = nameof(Company).ToUpper();
+}

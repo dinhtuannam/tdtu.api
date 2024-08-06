@@ -11,4 +11,6 @@ public class User : BaseEntity
 	public string Address { get; set; } = string.Empty;
 	public string? RoleId { get; set; }
 	public Role? Role { get; set; }
+	public Student? Student { get; set; }
+	public Company? Company { get; set; }
 }

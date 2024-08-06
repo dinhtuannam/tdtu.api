@@ -1,11 +1,20 @@
-﻿using System.Data.SqlTypes;
-
-namespace TDTU.API.Interfaces;
+﻿namespace TDTU.API.Interfaces;
 
 public interface IDataContext
 {
 	DbSet<User> Users { get; }
 	DbSet<Role> Roles { get; }
+	DbSet<Student> Students { get; }
+	DbSet<Company> Companies { get; }
+
+	DbSet<ApplicationStatus> ApplicationStatus { get; }
+	DbSet<InternshipJob> InternshipJobs { get; }
+	DbSet<InternshipJobApplication> InternshipJobApplications { get; }
+	DbSet<InternshipRegistration> InternshipRegistrations { get; }
+	DbSet<RegistrationStatus> RegistrationStatus { get; }
+	DbSet<InternshipTerm> InternshipTerms { get; }
+	DbSet<RegularJob> RegularJobs { get; }
+	DbSet<RegularJobApplication> RegularJobApplications { get; }
 	Task<int> SaveChangesAsync();
 	Task<int> SaveChangesAsync(CancellationToken token);
 }

@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using TDTU.API.Interfaces;
 
 namespace TDTU.API.Data;
 
@@ -10,6 +9,27 @@ public class DataContext : DbContext, IDataContext
 	public DbSet<User> Users => Set<User>();
 
 	public DbSet<Role> Roles => Set<Role>();
+
+	public DbSet<Student> Students => Set<Student>();
+
+	public DbSet<Company> Companies => Set<Company>();
+
+	public DbSet<ApplicationStatus> ApplicationStatus => Set<ApplicationStatus>();
+
+	public DbSet<InternshipJob> InternshipJobs => Set<InternshipJob>();
+
+	public DbSet<InternshipJobApplication> InternshipJobApplications => Set<InternshipJobApplication>();
+
+	public DbSet<InternshipRegistration> InternshipRegistrations => Set<InternshipRegistration>();
+
+	public DbSet<RegistrationStatus> RegistrationStatus => Set<RegistrationStatus>();
+
+	public DbSet<InternshipTerm> InternshipTerms => Set<InternshipTerm>();
+
+	public DbSet<RegularJob> RegularJobs => Set<RegularJob>();
+
+	public DbSet<RegularJobApplication> RegularJobApplications => Set<RegularJobApplication>();
+
 
 	public Task<int> SaveChangesAsync()
 	{

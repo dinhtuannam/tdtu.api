@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TDTU.API.Data;
@@ -11,9 +12,11 @@ using TDTU.API.Data;
 namespace TDTU.API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240806103510_database-v2")]
+    partial class databasev2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,60 +208,6 @@ namespace TDTU.API.Migrations
                     b.ToTable("tb_internship_job_applications");
                 });
 
-            modelBuilder.Entity("TDTU.API.Data.InternshipOrder", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("CreatedApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("DeleteFlag")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<Guid?>("LastModifiedApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("RegistrationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("StatusId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TaxCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegistrationId");
-
-                    b.HasIndex("StatusId");
-
-                    b.ToTable("tb_internship_orders");
-                });
-
             modelBuilder.Entity("TDTU.API.Data.InternshipRegistration", b =>
                 {
                     b.Property<Guid>("Id")
@@ -334,39 +283,6 @@ namespace TDTU.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("tb_internship_terms");
-                });
-
-            modelBuilder.Entity("TDTU.API.Data.OrderStatus", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("CreatedApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("DeleteFlag")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("LastModifiedApplicationUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("LastModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("tb_order_status");
                 });
 
             modelBuilder.Entity("TDTU.API.Data.RegistrationStatus", b =>
@@ -672,21 +588,6 @@ namespace TDTU.API.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("TDTU.API.Data.InternshipOrder", b =>
-                {
-                    b.HasOne("TDTU.API.Data.InternshipRegistration", "Registration")
-                        .WithMany("Orders")
-                        .HasForeignKey("RegistrationId");
-
-                    b.HasOne("TDTU.API.Data.OrderStatus", "Status")
-                        .WithMany("Orders")
-                        .HasForeignKey("StatusId");
-
-                    b.Navigation("Registration");
-
-                    b.Navigation("Status");
-                });
-
             modelBuilder.Entity("TDTU.API.Data.InternshipRegistration", b =>
                 {
                     b.HasOne("TDTU.API.Data.InternshipTerm", "InternshipTerm")
@@ -769,21 +670,11 @@ namespace TDTU.API.Migrations
                     b.Navigation("Applications");
                 });
 
-            modelBuilder.Entity("TDTU.API.Data.InternshipRegistration", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
             modelBuilder.Entity("TDTU.API.Data.InternshipTerm", b =>
                 {
                     b.Navigation("Jobs");
 
                     b.Navigation("Registrations");
-                });
-
-            modelBuilder.Entity("TDTU.API.Data.OrderStatus", b =>
-                {
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("TDTU.API.Data.RegistrationStatus", b =>
