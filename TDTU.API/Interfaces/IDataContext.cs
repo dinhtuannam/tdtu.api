@@ -6,6 +6,7 @@ public interface IDataContext
 	DbSet<Role> Roles { get; }
 	DbSet<Student> Students { get; }
 	DbSet<Company> Companies { get; }
+	DbSet<StudentProfile> StudentProfiles { get; }
 	DbSet<InternshipOrder> InternshipOrders { get; }
 	DbSet<OrderStatus> OrderStatus { get; }
 	DbSet<ApplicationStatus> ApplicationStatus { get; }

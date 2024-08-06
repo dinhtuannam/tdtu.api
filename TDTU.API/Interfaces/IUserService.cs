@@ -1,4 +1,4 @@
-﻿using TDTU.API.Dtos.UserDto;
+﻿using TDTU.API.Dtos.UserDTO;
 using TDTU.API.Models.UserModel;
 
 namespace TDTU.API.Interfaces;

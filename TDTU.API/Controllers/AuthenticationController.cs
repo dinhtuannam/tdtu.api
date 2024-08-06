@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TDTU.API.Dtos.UserDto;
+using TDTU.API.Dtos.UserDTO;
 using TDTU.API.Filters;
 using TDTU.API.Models.UserModel;
 

@@ -19,6 +19,7 @@ public class DataContext : DbContext, IDataContext
 	public DbSet<RegularJobApplication> RegularJobApplications => Set<RegularJobApplication>();
 	public DbSet<InternshipOrder> InternshipOrders => Set<InternshipOrder>();
 	public DbSet<OrderStatus> OrderStatus => Set<OrderStatus>();
+	public DbSet<StudentProfile> StudentProfiles => Set<StudentProfile>();
 
 	public Task<int> SaveChangesAsync()
 	{

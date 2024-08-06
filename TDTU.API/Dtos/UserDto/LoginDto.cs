@@ -1,4 +1,4 @@
-﻿namespace TDTU.API.Dtos.UserDto;
+﻿namespace TDTU.API.Dtos.UserDTO;
 
 public class LoginDto
 {

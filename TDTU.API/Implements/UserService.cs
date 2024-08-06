@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using TDTU.API.Dtos.UserDto;
+using TDTU.API.Dtos.UserDTO;
 using TDTU.API.Models.UserModel;
 using Udemy.Application.Commons.Mappings;
 

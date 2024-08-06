@@ -1,0 +1,141 @@
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using TDTU.API.Dtos.CompanyDto;
+using TDTU.API.Models.CompanyModel;
+using Udemy.Application.Commons.Mappings;
+
+namespace TDTU.API.Implements;
+
+public class CompanyService : ICompanyService
+{
+	private readonly IDataContext _context;
+	private readonly IMapper _mapper;
+	public CompanyService(IDataContext context, IMapper mapper)
+	{
+		_context = context;
+		_mapper = mapper;
+	}
+	public async Task<bool> DeleteByIds(DeleteRequest request)
+	{
+		if (request.Ids == null) throw new ApplicationException("Không tìm thấy tham số Id.");
+		List<Guid> ids = request.Ids.Select(m => Guid.Parse(m)).ToList();
+		var query = await _context.Companies.Where(m => ids.Contains(m.Id)).ToListAsync();
+		if (query == null || query.Count == 0) throw new ApplicationException($"Không tìm thấy trong dữ liệu có Id: {string.Join(";", request.Ids)}");
+
+		foreach (var item in query)
+		{
+			item.DeleteFlag = true;
+			item.LastModifiedDate = DateTime.Now;
+			item.LastModifiedApplicationUserId = request.ApplicationUserId;
+		}
+		_context.Companies.UpdateRange(query);
+
+		int rows = await _context.SaveChangesAsync();
+		return rows > 0;
+	}
+
+	public async Task<List<CompanyDto>> GetAll(BaseRequest request)
+	{
+		List<CompanyDto> data = await _context.Companies.Include(s => s.User)
+											  .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+											  .ToListAsync();
+		return data;
+	}
+
+	public async Task<CompanyDto> GetById(Guid id)
+	{
+		CompanyDto? data = await _context.Companies.Include(s => s.User).Where(s => s.Id == id)
+									  .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+									  .FirstOrDefaultAsync();
+		return data;
+	}
+
+	public async Task<List<CompanyDto>> GetFilter(FilterRequest request)
+	{
+		var query = _context.Companies.ProjectTo<CompanyDto>(_mapper.ConfigurationProvider).AsNoTracking();
+
+		if (!string.IsNullOrEmpty(request.TextSearch))
+		{
+			string text = request.TextSearch.ToLower();
+			query = query.Where(x => x.Name.ToLower().Contains(text) ||
+									 x.Email.ToLower().Contains(text) ||
+									 x.TaxCode.ToLower().Contains(text));
+		}
+
+		if (request.Skip != null)
+		{
+			query = query.Skip(request.Skip.Value);
+		}
+
+		if (request.TotalRecord != null)
+		{
+			query = query.Take(request.TotalRecord.Value);
+		}
+
+		return await query.ToListAsync();
+	}
+
+	public async Task<PaginatedList<CompanyDto>> GetPagination(PaginationRequest request)
+	{
+		var query = _context.Companies.Where(m => m.DeleteFlag == false)
+								  .OrderByDescending(x => x.CreatedDate)
+								  .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider);
+
+		if (!string.IsNullOrEmpty(request.TextSearch))
+		{
+			string text = request.TextSearch.ToLower();
+			query = query.Where(x => x.Email.ToLower().Contains(text) ||
+									 x.Phone.ToLower().Contains(text));
+		}
+
+		PaginatedList<CompanyDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);
+		return paging;
+	}
+
+	public async Task<CompanyDto> Update(CompanyAddOrUpdate request)
+	{
+		var company = await _context.Companies.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == request.Id);
+		if (company == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.Id}");
+		company.Name = request.Name;
+		company.TaxCode = request.TaxCode;
+		company.Logo = request.Logo;
+		company.Description = request.Description ?? company.Description;
+		company.LastModifiedApplicationUserId = request.LastModifiedApplicationUserId;
+		company.LastModifiedDate = DateTime.Now;
+		company.User.Email = request.Email;
+		company.User.Address = request.Address ?? company.User.Address;
+		company.User.Phone = request.Phone ?? company.User.Phone;
+		_context.Companies.Update(company);
+		_context.Users.Update(company.User);
+		await _context.SaveChangesAsync();
+		return _mapper.Map<CompanyDto>(company);
+	}
+
+	public async Task<CompanyDto> Add(CompanyAddOrUpdate request)
+	{
+		var user = new User()
+		{
+			Email = request.Email,
+			Address = request.Address ?? "",
+			Phone = request.Phone ?? "",
+			RoleId = RoleConstant.Company,
+			CreatedApplicationUserId = request.CreatedApplicationUserId
+		};
+		await _context.Users.AddAsync(user);
+
+		var company = new Company()
+		{
+			Id = user.Id,
+			User = user,
+			Name = request.Name,
+			TaxCode = request.TaxCode,
+			Description = request.Description ?? "",
+			Logo = request.Logo,
+			CreatedApplicationUserId = request.CreatedApplicationUserId
+		};
+		_context.Companies.Add(company);
+		await _context.SaveChangesAsync();
+		return _mapper.Map<CompanyDto>(company);
+	}
+
+}

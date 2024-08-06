@@ -10,6 +10,7 @@ public class Student : BaseEntity
 	public DateTime? StartDate { get; set; } = DateTime.Now.AddYears(-4);
 	public string? Major { get; set; } = string.Empty;	
 	public User User { get; set; }
+	public ICollection<StudentProfile>? Profiles { set; get; }
 	public ICollection<InternshipRegistration>? Registrations { set; get; }
 	public ICollection<RegularJobApplication>? RegularJobApplications { set; get; }
 	public ICollection<InternshipJobApplication>? InternshipJobApplications { set; get; }
