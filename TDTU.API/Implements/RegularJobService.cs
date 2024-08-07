@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using TDTU.API.Dtos.RegularJobDTO;
 using TDTU.API.Models.RegularJobModel;
-using Udemy.Application.Commons.Mappings;
 
 namespace TDTU.API.Implements;
 
@@ -107,6 +106,11 @@ public class RegularJobService : IRegularJobService
 		{
 			string text = request.TextSearch.ToLower();
 			query = query.Where(x => x.Name.ToLower().Contains(text));
+		}
+
+		if(request.Id != null && request.Id != Guid.Empty)
+		{
+			query = query.Where(x => x.Company != null && x.Company.Id == request.Id);
 		}
 
 		PaginatedList<RegularJobDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);

@@ -106,6 +106,8 @@ namespace TDTU.API
 			#endregion
 
 			#region Service
+			builder.Services.AddScoped<IStudentService, StudentService>();
+			builder.Services.AddScoped<IStudentProfileService, StudentProfileService>();
 			builder.Services.AddScoped<IStorageService, StorageService>();
 			builder.Services.AddScoped<IUserService, UserService>();
 			builder.Services.AddScoped<IRegularJobService, RegularJobService>();

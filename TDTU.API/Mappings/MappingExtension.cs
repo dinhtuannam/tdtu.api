@@ -1,7 +1,7 @@
 ﻿using AutoMapper.QueryableExtensions;
 using IConfigurationProvider = AutoMapper.IConfigurationProvider;
 
-namespace Udemy.Application.Commons.Mappings;
+namespace TDTU.API.Mappings;
 
 public static class MappingExtensions
 {

@@ -5,3 +5,4 @@ global using Microsoft.EntityFrameworkCore;
 global using TDTU.API.Utilities;
 global using TDTU.API.Interfaces;
 global using TDTU.API.Dtos;
+global using TDTU.API.Mappings;

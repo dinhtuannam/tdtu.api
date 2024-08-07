@@ -2,7 +2,6 @@
 using AutoMapper.QueryableExtensions;
 using TDTU.API.Dtos.CompanyDTO;
 using TDTU.API.Models.CompanyModel;
-using Udemy.Application.Commons.Mappings;
 
 namespace TDTU.API.Implements;
 
@@ -52,7 +51,10 @@ public class CompanyService : ICompanyService
 
 	public async Task<List<CompanyDto>> GetFilter(FilterRequest request)
 	{
-		var query = _context.Companies.ProjectTo<CompanyDto>(_mapper.ConfigurationProvider).AsNoTracking();
+		var query = _context.Companies.Include(s => s.User)
+							.OrderByDescending(x => x.CreatedDate)
+							.ProjectTo<CompanyDto>(_mapper.ConfigurationProvider)
+							.AsNoTracking();
 
 		if (!string.IsNullOrEmpty(request.TextSearch))
 		{
@@ -77,7 +79,7 @@ public class CompanyService : ICompanyService
 
 	public async Task<PaginatedList<CompanyDto>> GetPagination(PaginationRequest request)
 	{
-		var query = _context.Companies.Where(m => m.DeleteFlag == false)
+		var query = _context.Companies.Include(s => s.User)
 								  .OrderByDescending(x => x.CreatedDate)
 								  .ProjectTo<CompanyDto>(_mapper.ConfigurationProvider);
 

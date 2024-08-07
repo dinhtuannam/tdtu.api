@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Text;
 using TDTU.API.Dtos.UserDTO;
 using TDTU.API.Models.UserModel;
-using Udemy.Application.Commons.Mappings;
 
 namespace TDTU.API.Implements;
 

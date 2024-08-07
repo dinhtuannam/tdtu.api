@@ -40,6 +40,8 @@ public class StorageService : IStorageService
 			foreach (var file in files)
 			{
 				var uploadResult = new ImageUploadResult();
+				string PublicId = "";
+				string Url = "";
 				using (var stream = file.OpenReadStream())
 				{
 					var uploadParams = new ImageUploadParams
@@ -47,14 +49,18 @@ public class StorageService : IStorageService
 						File = new FileDescription(file.FileName, stream)
 					};
 					uploadResult = await _cloudinary.UploadAsync(uploadParams);
+					PublicId = uploadResult.PublicId;
+					Url = uploadResult.Url.ToString();
+
 					var item = new FileDto()
 					{
-						PublicId = uploadResult.PublicId,
+						PublicId = PublicId,
 						OriginalName = file.FileName,
 						Extension = file.ContentType,
-						Url = uploadResult.Url.ToString()
+						Url = Url
 					};
 					list.Add(item);
+
 				}
 			}
 			return list;
