@@ -39,7 +39,7 @@ namespace TDTU.API
 			{
 				swa.SwaggerDoc("v1", new OpenApiInfo
 				{
-					Title = "Movie Theater Web API",
+					Title = "TDTU Web API",
 					Version = "v1"
 				});
 

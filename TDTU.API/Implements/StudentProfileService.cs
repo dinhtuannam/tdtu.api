@@ -55,6 +55,34 @@ public class StudentProfileService : IStudentProfileService
 		return rows > 0;
 	}
 
+	public async Task<List<StudentProfileDto>> GetFilter(FilterRequest request)
+	{
+		var query = _context.StudentProfiles.ProjectTo<StudentProfileDto>(_mapper.ConfigurationProvider).AsNoTracking();
+
+		if (!string.IsNullOrEmpty(request.TextSearch))
+		{
+			string text = request.TextSearch.ToLower();
+			query = query.Where(x => x.Name.ToLower().Contains(text));
+		}
+
+		if (request.Id != null && request.Id != Guid.Empty)
+		{
+			query = query.Where(x => x.StudentId == request.Id);
+		}
+
+		if (request.Skip != null)
+		{
+			query = query.Skip(request.Skip.Value);
+		}
+
+		if (request.TotalRecord != null)
+		{
+			query = query.Take(request.TotalRecord.Value);
+		}
+
+		return await query.ToListAsync();
+	}
+
 	public async Task<PaginatedList<StudentProfileDto>> GetPagination(PaginationRequest request)
 	{
 		var query = _context.StudentProfiles
