@@ -9,3 +9,10 @@ public class ApplicationStatus : BaseStatusEntity
 	public string Description { get; set; }
 	public ICollection<InternshipJobApplication>? InternshipJobApplications { set; get; }
 }
+
+public static class ApplicationStatusConstant
+{
+	public static string Pending { get; } = nameof(Pending).ToUpper();
+	public static string Accepted { get; } = nameof(Accepted).ToUpper();
+	public static string Declined { get; } = nameof(Declined).ToUpper();
+}

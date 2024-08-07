@@ -17,4 +17,6 @@ public class InternshipJobApplication : BaseEntity
 	public string Phone { get; set; } = string.Empty;
 	public string CV { get; set; } = string.Empty;
 	public string Introduce { get; set; } = string.Empty;
+	public string? Company { get; set; } = string.Empty;
+	public string? Position { get; set; } = string.Empty;
 }
