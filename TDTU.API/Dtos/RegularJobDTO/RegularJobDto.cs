@@ -10,6 +10,7 @@ public class RegularJobDto : BaseEntityDto
 	public decimal SalaryMax { get; set; }
 	public string Description { get; set; } = string.Empty;
 	public DateTime ExpireDate { get; set; }
+	public Guid? CompanyId { get; set; }
 	public CompanyDto Company { get; set; }
 
 	private class Mapping : Profile

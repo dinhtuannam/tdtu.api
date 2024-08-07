@@ -2,7 +2,7 @@
 
 namespace TDTU.API.Dtos.StudentDTO;
 
-public class StudentProfileDto : BaseEntity
+public class StudentProfileDto : BaseEntityDto
 {
 	public Guid? StudentId { get; set; }
 	public string Name { get; set; } = string.Empty;

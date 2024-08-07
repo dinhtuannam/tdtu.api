@@ -83,6 +83,11 @@ public class RegularJobService : IRegularJobService
 			query = query.Where(x => x.Name.ToLower().Contains(text));
 		}
 
+		if (request.Id != null && request.Id != Guid.Empty)
+		{
+			query = query.Where(x => x.CompanyId == request.Id);
+		}
+
 		if (request.Skip != null)
 		{
 			query = query.Skip(request.Skip.Value);
@@ -110,7 +115,7 @@ public class RegularJobService : IRegularJobService
 
 		if(request.Id != null && request.Id != Guid.Empty)
 		{
-			query = query.Where(x => x.Company != null && x.Company.Id == request.Id);
+			query = query.Where(x => x.CompanyId == request.Id);
 		}
 
 		PaginatedList<RegularJobDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);
