@@ -57,6 +57,7 @@ namespace TDTU.API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] RegularJobAddOrUpdate request)
 		{
+			request.CompanyId = GetUserId() ?? Guid.Empty;
 			var data = await _regularJobService.Add(request);
 			var response = Result<RegularJobDto>.Success(data);
 			return Ok(response);
@@ -65,6 +66,7 @@ namespace TDTU.API.Controllers
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody] RegularJobAddOrUpdate request)
 		{
+			request.CompanyId = GetUserId() ?? Guid.Empty;
 			var data = await _regularJobService.Update(request);
 			var response = Result<RegularJobDto>.Success(data);
 			return Ok(response);

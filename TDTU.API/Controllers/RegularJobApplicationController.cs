@@ -17,6 +17,7 @@ namespace TDTU.API.Controllers
 		[HttpPost("apply")]
 		public async Task<IActionResult> Apply(RegularJobApplyRequest request)
 		{
+			request.StudentId = GetUserId() ?? Guid.Empty;
 			var data = await _service.ApplyJob(request);
 			var response = Result<RegularJobApplicationDto>.Success(data);
 			return Ok(response);
@@ -30,8 +31,8 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("company/pagination")]
-		public async Task<IActionResult> PaginationCompany([FromQuery] PaginationRequest request)
+		[HttpGet("job/pagination")]
+		public async Task<IActionResult> PaginationJob([FromQuery] PaginationRequest request)
 		{
 			var data = await _service.JobApplications(request);
 			var response = Result<PaginatedList<RegularJobApplicationDto>>.Success(data);
@@ -41,6 +42,7 @@ namespace TDTU.API.Controllers
 		[HttpGet("student/pagination")]
 		public async Task<IActionResult> PaginationStudent([FromQuery] PaginationRequest request)
 		{
+			request.Id = GetUserId() ?? Guid.Empty;
 			var data = await _service.UserHistory(request);
 			var response = Result<PaginatedList<RegularJobApplicationDto>>.Success(data);
 			return Ok(response);

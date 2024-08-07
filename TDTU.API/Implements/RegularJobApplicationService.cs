@@ -110,7 +110,7 @@ public class RegularJobApplicationService : IRegularJobApplicationService
 		if (request.Id == null) throw new ApplicationException("Không tìm thấy Id doanh nghiệp");
 
 		var query = _context.RegularJobApplications.Include(s => s.Job)
-							.Where(m => m.DeleteFlag == false && m.Job != null && m.Job.CompanyId == request.Id)
+							.Where(m => m.DeleteFlag == false && m.JobId == request.Id)
 							.OrderByDescending(x => x.CreatedDate)
 							.ProjectTo<RegularJobApplicationDto>(_mapper.ConfigurationProvider);
 

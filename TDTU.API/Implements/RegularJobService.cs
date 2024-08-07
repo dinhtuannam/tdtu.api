@@ -141,6 +141,8 @@ public class RegularJobService : IRegularJobService
 								.FirstOrDefaultAsync(s => s.Id == request.Id);
 		if (job == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.Id}");
 
+		if(company.Id != job.Id) throw new ApplicationException($"Bạn không đủ quyền thao tác");
+
 		job.Name = request.Name;
 		job.SalaryMin = request.SalaryMin;
 		job.SalaryMax = request.SalaryMax;

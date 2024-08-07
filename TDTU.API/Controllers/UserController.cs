@@ -21,7 +21,7 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("Profile")]
+		[HttpGet("profile")]
 		public async Task<IActionResult> Profile()
 		{
 			var id = GetUserId();
