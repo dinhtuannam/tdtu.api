@@ -9,4 +9,5 @@ public class RegularJobAddOrUpdate : AddOrUpdateRequest
 	public string Description { get; set; } = string.Empty;
 	public DateTime ExpireDate { get; set; } = DateTime.Now.AddMonths(1);
 	public Guid CompanyId { get; set; }
+	public List<Guid> Skills { get; set; }
 }

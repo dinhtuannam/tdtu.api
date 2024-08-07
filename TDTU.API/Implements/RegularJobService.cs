@@ -31,6 +31,13 @@ public class RegularJobService : IRegularJobService
 			Description = request.Description,
 			CreatedApplicationUserId = request.CreatedApplicationUserId,
 		};
+
+		if (request.Skills.Any())
+		{
+			var skills = await _context.Skills.Where(s => request.Skills.Contains(s.Id)).ToListAsync();
+			job.Skills = skills;
+		}
+
 		_context.RegularJobs.Add(job);
 		await _context.SaveChangesAsync();
 		return _mapper.Map<RegularJobDto>(job);
@@ -65,16 +72,18 @@ public class RegularJobService : IRegularJobService
 
 	public async Task<RegularJobDto> GetById(Guid id)
 	{
-		RegularJobDto? data = await _context.RegularJobs.Include(s => s.Company).ThenInclude(s => s.User)
-											  .Where(s => s.Id == id)
-											  .ProjectTo<RegularJobDto>(_mapper.ConfigurationProvider)
-											  .FirstOrDefaultAsync();
+		RegularJobDto? data = await _context.RegularJobs.Include(s => s.Skills)
+											.Include(s => s.Company).ThenInclude(s => s.User)
+											.Where(s => s.Id == id)
+											.ProjectTo<RegularJobDto>(_mapper.ConfigurationProvider)
+											.FirstOrDefaultAsync();
 		return data;
 	}
 
 	public async Task<List<RegularJobDto>> GetFilter(FilterRequest request)
 	{
-		var query = _context.RegularJobs.Include(s => s.Company).ThenInclude(s => s.User)
+		var query = _context.RegularJobs.Include(s => s.Skills)
+							.Include(s => s.Company).ThenInclude(s => s.User)
 							.ProjectTo<RegularJobDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
 		if (!string.IsNullOrEmpty(request.TextSearch))
@@ -103,7 +112,8 @@ public class RegularJobService : IRegularJobService
 
 	public async Task<PaginatedList<RegularJobDto>> GetPagination(PaginationRequest request)
 	{
-		var query = _context.RegularJobs.Include(s => s.Company).ThenInclude(s => s.User)
+		var query = _context.RegularJobs.Include(s => s.Skills)
+							.Include(s => s.Company).ThenInclude(s => s.User)
 							.OrderByDescending(x => x.CreatedDate)
 							.ProjectTo<RegularJobDto>(_mapper.ConfigurationProvider);
 
@@ -127,7 +137,8 @@ public class RegularJobService : IRegularJobService
 		var company = await _context.Companies.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == request.CompanyId);
 		if (company == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.CompanyId}");
 
-		var job = await _context.RegularJobs.FirstOrDefaultAsync(s => s.Id == request.Id);
+		var job = await _context.RegularJobs.Include(s => s.Skills).Include(s => s.Company)
+								.FirstOrDefaultAsync(s => s.Id == request.Id);
 		if (job == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.Id}");
 
 		job.Name = request.Name;
@@ -138,8 +149,15 @@ public class RegularJobService : IRegularJobService
 		job.Description = request.Description;
 		job.ExpireDate = request.ExpireDate;
 
+		if(job.Skills != null && job.Skills.Any())
+		{
+			job.Skills.Clear();
+		}
+		job.Skills = await _context.Skills.Where(s => request.Skills.Contains(s.Id)).ToListAsync();
+
 		_context.RegularJobs.Update(job);
 		await _context.SaveChangesAsync();
+
 		return _mapper.Map<RegularJobDto>(job);
 	}
 }
