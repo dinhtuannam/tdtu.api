@@ -6,7 +6,7 @@ namespace TDTU.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class CompanyController : ControllerBase
+	public class CompanyController : BaseController
 	{
 		private readonly ICompanyService _companyService;
 		public CompanyController(ICompanyService companyService)

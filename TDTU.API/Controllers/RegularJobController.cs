@@ -6,7 +6,7 @@ namespace TDTU.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class RegularJobController : ControllerBase
+	public class RegularJobController : BaseController
 	{
 		private readonly IRegularJobService _regularJobService;
 		public RegularJobController(IRegularJobService regularJobService)

@@ -9,3 +9,10 @@ public class RegistrationStatus : BaseStatusEntity
 	public string Description { get; set; } = string.Empty;
 	public ICollection<InternshipRegistration>? Registrations { set; get; }
 }
+
+public static class RegistrationStatusConstant
+{
+	public static string Pending { get; } = nameof(Pending).ToUpper();
+	public static string Inprogress { get; } = nameof(Inprogress).ToUpper();
+	public static string Done { get; } = nameof(Done).ToUpper();
+}

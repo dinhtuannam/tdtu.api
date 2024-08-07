@@ -1,6 +1,5 @@
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -106,6 +105,9 @@ namespace TDTU.API
 			#endregion
 
 			#region Service
+			builder.Services.AddScoped<IApplicationStatusService, ApplicationStatusService>();
+			builder.Services.AddScoped<IRegistrationStatusService, RegistrationStatusService>();
+			builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
 			builder.Services.AddScoped<IRegularJobApplicationService, RegularJobApplicationService>();
 			builder.Services.AddScoped<IInternshipJobApplicationService, InternshipJobApplicationService>();
 			builder.Services.AddScoped<ISkillService, SkillService>();
