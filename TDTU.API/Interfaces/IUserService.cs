@@ -5,6 +5,7 @@ namespace TDTU.API.Interfaces;
 
 public interface IUserService
 {
+	Task<ProfileDto> Profile(Guid id);
 	Task<LoginDto> Login(LoginModel request);
 	Task<PaginatedList<UserDto>> GetPagination(PaginationRequest request);
 	Task<List<UserDto>> GetAll(BaseRequest request);

@@ -99,7 +99,11 @@ public class UserService : IUserService
 	{
 		var user = await _context.Users.Where(s => s.Email == request.Email && s.Password == request.Password)
 								 .ProjectTo<UserDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+
 		if (user == null) throw new ApplicationException("Tên đang nhập hoặc mật khẩu không chính xác");
+
+		if (user.RoleId == null) throw new ApplicationException("Tài khoản không đủ quyền truy cập");
+
 		LoginDto result = new LoginDto()
 		{
 			User = user,
@@ -109,14 +113,60 @@ public class UserService : IUserService
 		return result;
 	}
 
+	public async Task<ProfileDto> Profile(Guid id)
+	{
+		var user = await _context.Users
+						 .ProjectTo<ProfileDto>(_mapper.ConfigurationProvider)
+						 .FirstOrDefaultAsync(s => s.Id == id);
+
+		if (user == null) throw new ApplicationException("Không tìm thấy dữ liệu người dùng");
+
+		if (user.RoleId == null) throw new ApplicationException("Tài khoản không đủ quyền truy cập");
+
+		if (user.RoleId == RoleConstant.Student) await GetStudentTerm(user);
+		else await GetAdminTerm(user);
+
+		return user;
+	}
+
+	private async Task GetStudentTerm(ProfileDto profile)
+	{
+		Guid id = profile.Id;
+		var term = await GetCurrentTerm();
+		if(term != null)
+		{
+			profile.TermId = term.Id;
+			var registration = await _context.InternshipRegistrations
+									 .Where(s => s.StudentId == id && s.InternshipTermId == term.Id)
+									 .FirstOrDefaultAsync();
+			
+			if(registration != null) profile.RegistrationId = registration.Id;
+		}
+	}
+
+	private async Task GetAdminTerm(ProfileDto profile)
+	{
+		Guid id = profile.Id;
+		var term = await GetCurrentTerm();
+		if (term != null) profile.TermId = term.Id;
+	}
+
+	private async Task<InternshipTerm?> GetCurrentTerm()
+	{
+		DateTime now = DateTime.Now;
+		var term = await _context.InternshipTerms
+						 .Where(s => s.IsExpired != true && s.StartDate < now && now < s.EndDate)
+						 .FirstOrDefaultAsync();
+		return term;
+	}
+
 	private string GenerateToken(Guid id, string email, string role)
 	{
-
 		var authClaims = new[]
 		{
 			new Claim(JWTClaimsTypeConstant.Id, id.ToString()),
 			new Claim(JWTClaimsTypeConstant.Email, email),
-			new Claim(JWTClaimsTypeConstant.Role, role),
+			new Claim(JWTClaimsTypeConstant.Role, role)
 		};
 
 		SymmetricSecurityKey authSigningKey = new(Encoding.UTF8.GetBytes(JWTConstant.Secret));

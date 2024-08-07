@@ -21,6 +21,15 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
+		[HttpGet("Profile")]
+		public async Task<IActionResult> Profile()
+		{
+			var id = GetUserId();
+			var data = await _userService.Profile(id ?? Guid.Empty);
+			var response = Result<ProfileDto>.Success(data);
+			return Ok(response);
+		}
+
 		[HttpGet("{id}")]
 		public async Task<IActionResult> GetById([FromRoute] Guid id)
 		{

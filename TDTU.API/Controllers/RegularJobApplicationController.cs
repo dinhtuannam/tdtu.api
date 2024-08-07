@@ -30,7 +30,7 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("/company/pagination")]
+		[HttpGet("company/pagination")]
 		public async Task<IActionResult> PaginationCompany([FromQuery] PaginationRequest request)
 		{
 			var data = await _service.JobApplications(request);
@@ -38,7 +38,7 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("/student/pagination")]
+		[HttpGet("student/pagination")]
 		public async Task<IActionResult> PaginationStudent([FromQuery] PaginationRequest request)
 		{
 			var data = await _service.UserHistory(request);
