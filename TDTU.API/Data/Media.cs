@@ -1,5 +1,8 @@
-﻿namespace TDTU.API.Data;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace TDTU.API.Data;
+
+[Table("tb_medias")]
 public class Media : BaseEntity
 {
 	public string? PublicId { get; set; } = string.Empty;

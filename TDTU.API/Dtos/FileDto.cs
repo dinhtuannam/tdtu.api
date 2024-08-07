@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using TDTU.API.Dtos.StudentDTO;
 
 namespace TDTU.API.Dtos;
 
