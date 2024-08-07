@@ -2,6 +2,8 @@
 
 public interface IDataContext
 {
+	DbSet<Skill> Skills { get; }
+	DbSet<Media> Medias { get; }
 	DbSet<User> Users { get; }
 	DbSet<Role> Roles { get; }
 	DbSet<Student> Students { get; }

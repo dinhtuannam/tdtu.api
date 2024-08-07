@@ -6,9 +6,11 @@ namespace TDTU.API.Implements;
 public class StorageService : IStorageService
 {
 	private readonly Cloudinary _cloudinary;
-	public StorageService(Cloudinary cloudinary)
+	private readonly IDataContext _context;
+	public StorageService(Cloudinary cloudinary, IDataContext context)
 	{
 		_cloudinary = cloudinary;
+		_context = context;
 	}
 
 	public async Task<bool> Delete(List<string> ids)
@@ -22,6 +24,7 @@ public class StorageService : IStorageService
 				var result = await _cloudinary.DestroyAsync(deleteParams);
 				if (result.Result == "ok") rows++;
 			}
+			await DeleteMedia(ids);
 			return rows > 0;
 		}
 		catch(Exception ex)
@@ -60,15 +63,61 @@ public class StorageService : IStorageService
 						Url = Url
 					};
 					list.Add(item);
-
 				}
 			}
+			await SaveMedia(list);
 			return list;
 		}
 		catch(Exception ex)
 		{
 			return new List<FileDto>();
 		}
+	}
+
+	private async Task SaveMedia(List<FileDto> list)
+	{
+		try
+		{
+			if (list.Any())
+			{
+				List<Media> medias = new List<Media>();
+				foreach (var item in list)
+				{
+					Media media = new Media();
+					media.PublicId = item.PublicId;
+					media.OriginalName = item.OriginalName;
+					media.Url = item.Url;
+					media.Extension = item.Extension;
+					medias.Add(media);
+				}
+				_context.Medias.AddRange(medias);
+				await _context.SaveChangesAsync();
+			}
+			
+		}
+		catch(Exception ex) { }
+	}
+
+	private async Task DeleteMedia(List<string> publicIds)
+	{
+		try
+		{
+			var medias = await _context.Medias
+							   .Where(s => s.PublicId != null && publicIds.Contains(s.PublicId))
+							   .ToListAsync();
+
+			if (medias.Any())
+			{
+				foreach (var media in medias)
+				{
+					media.DeleteFlag = true;
+					media.LastModifiedDate = DateTime.Now;
+				}
+				_context.Medias.UpdateRange(medias);
+				await _context.SaveChangesAsync();
+			}
+		}
+		catch (Exception ex) { }
 	}
 
 	private void CheckFileExtension(List<IFormFile> files)

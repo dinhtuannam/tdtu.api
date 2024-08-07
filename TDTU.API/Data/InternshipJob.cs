@@ -12,4 +12,5 @@ public class InternshipJob : BaseEntity
 	public Guid? InternshipTermId { get; set; }
 	public InternshipTerm? InternshipTerm { get; set; }
 	public ICollection<InternshipJobApplication>? Applications { set; get; }
+	public ICollection<Skill>? Skills { set; get; }
 }

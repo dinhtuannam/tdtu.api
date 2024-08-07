@@ -5,6 +5,8 @@ namespace TDTU.API.Data;
 public class DataContext : DbContext, IDataContext
 {
 	public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+	public DbSet<Skill> Skills => Set<Skill>();
+	public DbSet<Media> Medias => Set<Media>();
 	public DbSet<User> Users => Set<User>();
 	public DbSet<Role> Roles => Set<Role>();
 	public DbSet<Student> Students => Set<Student>();

@@ -1,4 +1,7 @@
-﻿namespace TDTU.API.Dtos;
+﻿using AutoMapper;
+using TDTU.API.Dtos.StudentDTO;
+
+namespace TDTU.API.Dtos;
 
 public class FileDto
 {
@@ -6,4 +9,12 @@ public class FileDto
 	public string OriginalName { get; set; }
 	public string Extension { get; set; }
 	public string Url { get; set; }
+
+	private class Mapping : Profile
+	{
+		public Mapping()
+		{
+			CreateMap<FileDto, Media>();
+		}
+	}
 }

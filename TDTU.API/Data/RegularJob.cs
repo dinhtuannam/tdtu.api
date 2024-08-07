@@ -13,4 +13,5 @@ public class RegularJob : BaseEntity
 	public Guid? CompanyId { get; set; }
 	public Company? Company { get; set; }
 	public ICollection<RegularJobApplication>? Applications { set; get; }
+	public ICollection<Skill>? Skills { set; get; }
 }
