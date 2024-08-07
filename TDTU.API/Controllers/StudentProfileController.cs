@@ -22,6 +22,14 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
+		[HttpGet("filter")]
+		public async Task<IActionResult> Filter([FromQuery] FilterRequest request)
+		{
+			var data = await _service.GetFilter(request);
+			var response = Result<List<StudentProfileDto>>.Success(data);
+			return Ok(response);
+		}
+
 		[HttpDelete]
 		public async Task<IActionResult> Delete([FromBody] DeleteRequest request)
 		{
