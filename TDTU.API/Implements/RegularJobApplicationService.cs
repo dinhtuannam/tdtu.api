@@ -107,8 +107,6 @@ public class RegularJobApplicationService : IRegularJobApplicationService
 
 	public async Task<PaginatedList<RegularJobApplicationDto>> JobApplications(PaginationRequest request, Guid id)
 	{
-		if (request.UserId == null) throw new ApplicationException("Không tìm thấy Id doanh nghiệp");
-
 		var query = _context.RegularJobApplications.Include(s => s.Job)
 							.Where(m => m.DeleteFlag == false && m.JobId == id)
 							.OrderByDescending(x => x.CreatedDate)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using TDTU.API.Dtos.InternshipJobApplicationDTO;
 using TDTU.API.Models.InternshipJobApplicationModel;
 
@@ -19,7 +20,7 @@ public class InternshipJobApplicationService : IInternshipJobApplicationService
 		DateTime now = DateTime.Now;
 		InternshipTerm? term = null;
 		var query = _context.InternshipTerms
-							.Where(s => s.StartDate < now && now > s.EndDate && s.IsExpired != true)
+							.Where(s => s.StartDate < now && now < s.EndDate && s.IsExpired != true)
 							.AsNoTracking();
 
 		if (id != null && id != Guid.Empty)
@@ -41,55 +42,179 @@ public class InternshipJobApplicationService : IInternshipJobApplicationService
 		return term;
 	}
 
-	/*public async Task<RegularJobApplicationDto> SetStatus(RegularJobSetStatusRequest request)
-	{
-		var application = await FindAsync(request.Id);
-		var company = await FindCompany(request.CompanyId);
-
-		if (application.Job!.CompanyId != company.Id)
-			throw new ApplicationException("Bạn không có quyền thao tác");
-
-		application.StudentId = request.StatusId;
-
-	}*/
-
 	private async Task<Company> FindCompany(Guid id)
 	{
 		var company = await _context.Companies.FirstOrDefaultAsync(s => s.Id == id);
 		if (company == null)
 		{
-			throw new ApplicationException($"Không tìm thấy công ty với Id: {id}");
+			throw new ApplicationException($"Không tìm thấy doanh nghiệp với Id: {id}");
 		}
 		return company;
 	}
 
-	public Task<InternshipJobApplicationDto> Apply(InternshipJobApply request)
+	private async Task<ApplicationStatus> FindStatus(string id)
 	{
-		throw new NotImplementedException();
+		var status = await _context.ApplicationStatus.FirstOrDefaultAsync(s => s.Id == id);
+		if (status == null)
+		{
+			throw new ApplicationException($"Trạng thái không hợp lệ: {status}");
+		}
+		return status;
 	}
 
-	public Task<InternshipJobApplicationDto> SetStatus(InternshipJobSetStatus request)
+	private async Task<Student> FindStudent(Guid id)
 	{
-		throw new NotImplementedException();
+		var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == id);
+		if (student == null)
+		{
+			throw new ApplicationException($"Không tìm thấy học sinh với Id: {id}");
+		}
+		return student;
 	}
 
-	public Task<PaginatedList<InternshipJobApplicationDto>> UserHistory(PaginationRequest request)
+	private async Task<InternshipJob> FindJob(Guid id)
 	{
-		throw new NotImplementedException();
+		var job = await _context.InternshipJobs.Where(s => s.Company != null && s.InternshipTerm != null)
+								.Include(s => s.Company).Include(s => s.InternshipTerm)
+								.FirstOrDefaultAsync(s => s.Id == id && s.Company != null);
+		if (job == null)
+		{
+			throw new ApplicationException($"Không tìm thấy công việc với Id: {id}");
+		}
+
+		if(job.InternshipTerm!.EndDate < DateTime.Now)
+		{
+			throw new ApplicationException($"Công việc đã hết hạn ứng tuyển");
+		}
+
+		return job;
 	}
 
-	public Task<PaginatedList<InternshipJobApplicationDto>> JobApplications(PaginationRequest request)
+	public async Task<InternshipJobApplicationDto> Apply(InternshipJobApply request)
 	{
-		throw new NotImplementedException();
+		var status = await FindStatus(ApplicationStatusConstant.Pending);
+		var job = await FindJob(request.JobId);
+		var student = await FindStudent(request.StudentId);
+		var term = await GetCurrentTerm(request.TermId, request.StudentId);
+
+		if (term == null) throw new ApplicationException("Đợt thực tập không khả dụng");
+
+		var exist = await _context.InternshipJobApplications
+						  .Where(s => s.StudentId == student.Id && s.JobId == request.JobId)
+						  .FirstOrDefaultAsync();
+
+		if (exist != null) throw new ApplicationException("Bạn đã ứng tuyển vị trí này");
+
+		var application = new InternshipJobApplication()
+		{
+			Status = status,
+			StatusId = status!.Id,
+			Job = job,
+			JobId = job.Id,
+			Student = student,
+			StudentId = student.Id,
+			Company = job.Company!.Name,
+			Position = job.Name,
+			Code = request.Code,
+			FullName = request.FullName,
+			Email = request.Email,
+			Phone = request.Phone,
+			CV = request.CV,
+			Introduce = request.Introduce ?? ""
+		};
+
+		_context.InternshipJobApplications.Add(application);
+		await _context.SaveChangesAsync();
+
+		return _mapper.Map<InternshipJobApplicationDto>(application);
 	}
 
-	public Task<InternshipJobApplicationDto> GetById(Guid id)
+	public async Task<InternshipJobApplicationDto> SetStatus(InternshipJobSetStatus request)
 	{
-		throw new NotImplementedException();
+		var company = await FindCompany(request.CompanyId);
+		var status = await FindStatus(request.Status);
+
+		var application = await _context.InternshipJobApplications
+								.Include(s => s.Job).Include(s => s.Status)
+								.Where(s => s.Id == request.Id && s.Job != null)
+								.FirstOrDefaultAsync();
+
+		if (application == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.Id}");
+
+		if (application.Job!.CompanyId != company.Id) throw new ApplicationException($"Bạn không đủ quyền thao tác");
+
+		application.Status = status;
+		application.StatusId = status.Id;
+		application.LastModifiedApplicationUserId = company.Id;
+		application.LastModifiedDate = DateTime.Now;
+
+		return _mapper.Map<InternshipJobApplicationDto>(application);
 	}
 
-	public Task<bool> DeleteByIds(DeleteRequest request)
+	public async Task<PaginatedList<InternshipJobApplicationDto>> UserHistory(PaginationRequest request)
 	{
-		throw new NotImplementedException();
+		if (request.UserId == null) throw new ApplicationException("Không tìm thấy Id người dùng");
+
+		var query = _context.InternshipJobApplications.Include(s => s.Status)
+							.Where(m => m.DeleteFlag == false && m.StudentId == request.UserId)
+							.OrderByDescending(x => x.CreatedDate)
+							.ProjectTo<InternshipJobApplicationDto>(_mapper.ConfigurationProvider);
+
+		if (!string.IsNullOrEmpty(request.TextSearch))
+		{
+			string text = request.TextSearch.ToLower();
+			query = query.Where(x => x.FullName.ToLower().Contains(text) ||
+									 x.Company!.ToLower().Contains(text) ||
+									 x.Position!.ToLower().Contains(text));
+		}
+
+		PaginatedList<InternshipJobApplicationDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);
+		return paging;
+	}
+
+	public async Task<PaginatedList<InternshipJobApplicationDto>> JobApplications(PaginationRequest request, Guid id)
+	{
+		var query = _context.InternshipJobApplications.Include(s => s.Status)
+							.Where(m => m.DeleteFlag == false && m.JobId == id)
+							.OrderByDescending(x => x.CreatedDate)
+							.ProjectTo<InternshipJobApplicationDto>(_mapper.ConfigurationProvider);
+
+		if (!string.IsNullOrEmpty(request.TextSearch))
+		{
+			string text = request.TextSearch.ToLower();
+			query = query.Where(x => x.FullName.ToLower().Contains(text) ||
+									 x.Company!.ToLower().Contains(text) ||
+									 x.Position!.ToLower().Contains(text));
+		}
+
+		PaginatedList<InternshipJobApplicationDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);
+		return paging;
+	}
+
+	public async Task<InternshipJobApplicationDto> GetById(Guid id)
+	{
+		var data = await _context.InternshipJobApplications.Include(s => s.Status)
+								 .ProjectTo<InternshipJobApplicationDto>(_mapper.ConfigurationProvider)
+								 .FirstOrDefaultAsync(s => s.Id == id);
+		return data;
+	}
+
+	public async Task<bool> DeleteByIds(DeleteRequest request)
+	{
+		if (request.Ids == null) throw new ApplicationException("Không tìm thấy tham số Id.");
+		List<Guid> ids = request.Ids.Select(m => Guid.Parse(m)).ToList();
+		var query = await _context.InternshipJobApplications.Where(m => ids.Contains(m.Id)).ToListAsync();
+		if (query == null || query.Count == 0) throw new ApplicationException($"Không tìm thấy trong dữ liệu có Id: {string.Join(";", request.Ids)}");
+
+		foreach (var item in query)
+		{
+			item.DeleteFlag = true;
+			item.LastModifiedDate = DateTime.Now;
+			item.LastModifiedApplicationUserId = request.ApplicationUserId;
+		}
+		_context.InternshipJobApplications.UpdateRange(query);
+
+		int rows = await _context.SaveChangesAsync();
+		return rows > 0;
 	}
 }

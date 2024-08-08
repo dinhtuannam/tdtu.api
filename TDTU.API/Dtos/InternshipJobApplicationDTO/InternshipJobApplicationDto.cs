@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using TDTU.API.Dtos.ApplicationStatusDTO;
-using TDTU.API.Dtos.CompanyDTO;
-
 namespace TDTU.API.Dtos.InternshipJobApplicationDTO;
 
 public class InternshipJobApplicationDto : BaseEntityDto
