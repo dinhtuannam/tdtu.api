@@ -116,6 +116,7 @@ namespace TDTU.API
 			builder.Services.AddScoped<IStorageService, StorageService>();
 			builder.Services.AddScoped<IUserService, UserService>();
 			builder.Services.AddScoped<IRegularJobService, RegularJobService>();
+			builder.Services.AddScoped<IInternshipJobService, InternshipJobService>();
 			builder.Services.AddScoped<ICompanyService, CompanyService>();
 			builder.Services.AddScoped<IDataContext>(provider => provider.GetRequiredService<DataContext>());
 			builder.Services.AddTransient<IDataContextInitializer, DataContextInitializer>();

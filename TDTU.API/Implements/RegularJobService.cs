@@ -17,8 +17,7 @@ public class RegularJobService : IRegularJobService
 
 	public async Task<RegularJobDto> Add(RegularJobAddOrUpdate request)
 	{
-		var company = await _context.Companies.FirstOrDefaultAsync(s => s.Id == request.CompanyId);
-		if (company == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.CompanyId}");
+		var company = await FindCompany(request.CompanyId);
 
 		var job = new RegularJob()
 		{
@@ -132,14 +131,34 @@ public class RegularJobService : IRegularJobService
 		return paging;
 	}
 
+	private async Task<RegularJob> FindAsync(Guid? id)
+	{
+		if (id == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {id}");
+
+		var job = await _context.RegularJobs.Include(s => s.Skills)
+								.Include(s => s.Company).ThenInclude(s => s.User)
+								.FirstOrDefaultAsync(s => s.Id == id);
+
+		if (job == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {id}");
+
+		return job;
+	}
+
+	private async Task<Company> FindCompany(Guid id)
+	{
+		var company = await _context.Companies.FirstOrDefaultAsync(s => s.Id == id);
+		if (company == null)
+		{
+			throw new ApplicationException($"Không tìm thấy doanh nghiệp với ID: {id}");
+		}
+
+		return company;
+	}
+
 	public async Task<RegularJobDto> Update(RegularJobAddOrUpdate request)
 	{
-		var company = await _context.Companies.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == request.CompanyId);
-		if (company == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.CompanyId}");
-
-		var job = await _context.RegularJobs.Include(s => s.Skills).Include(s => s.Company)
-								.FirstOrDefaultAsync(s => s.Id == request.Id);
-		if (job == null) throw new ApplicationException($"Không tìm thấy dữ liệu với Id: {request.Id}");
+		var company = await FindCompany(request.CompanyId);
+		var job = await FindAsync(request.Id);
 
 		if(company.Id != job.Id) throw new ApplicationException($"Bạn không đủ quyền thao tác");
 
