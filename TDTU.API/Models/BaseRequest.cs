@@ -2,7 +2,6 @@
 
 public class BaseRequest 
 {
-	public Guid? Id { get; set; }
 	public Guid? UserId { get; set; }
 	public Guid? TermId { get; set; }
 	public Guid? RegistrationId { get; set; }

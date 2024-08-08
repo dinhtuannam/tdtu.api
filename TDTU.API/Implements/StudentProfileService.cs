@@ -65,9 +65,9 @@ public class StudentProfileService : IStudentProfileService
 			query = query.Where(x => x.Name.ToLower().Contains(text));
 		}
 
-		if (request.Id != null && request.Id != Guid.Empty)
+		if (request.UserId != null && request.UserId != Guid.Empty)
 		{
-			query = query.Where(x => x.StudentId == request.Id);
+			query = query.Where(x => x.StudentId == request.UserId);
 		}
 
 		if (request.Skip != null)
@@ -95,9 +95,9 @@ public class StudentProfileService : IStudentProfileService
 			query = query.Where(x => x.Name.ToLower().Contains(text));
 		}
 
-		if (request.Id != null && request.Id != Guid.Empty)
+		if (request.UserId != null && request.UserId != Guid.Empty)
 		{
-			query = query.Where(x => x.StudentId == request.Id);
+			query = query.Where(x => x.StudentId == request.UserId);
 		}
 
 		PaginatedList<StudentProfileDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);

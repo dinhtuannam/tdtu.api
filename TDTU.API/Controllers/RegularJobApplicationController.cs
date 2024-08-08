@@ -31,10 +31,10 @@ namespace TDTU.API.Controllers
 			return Ok(response);
 		}
 
-		[HttpGet("job/pagination")]
-		public async Task<IActionResult> PaginationJob([FromQuery] PaginationRequest request)
+		[HttpGet("job/{id}/pagination")]
+		public async Task<IActionResult> PaginationJob([FromQuery] PaginationRequest request, [FromRoute] Guid id)
 		{
-			var data = await _service.JobApplications(request);
+			var data = await _service.JobApplications(request,id);
 			var response = Result<PaginatedList<RegularJobApplicationDto>>.Success(data);
 			return Ok(response);
 		}
@@ -42,7 +42,7 @@ namespace TDTU.API.Controllers
 		[HttpGet("student/pagination")]
 		public async Task<IActionResult> PaginationStudent([FromQuery] PaginationRequest request)
 		{
-			request.Id = GetUserId() ?? Guid.Empty;
+			request.UserId = GetUserId() ?? Guid.Empty;
 			var data = await _service.UserHistory(request);
 			var response = Result<PaginatedList<RegularJobApplicationDto>>.Success(data);
 			return Ok(response);

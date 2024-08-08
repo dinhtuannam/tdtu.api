@@ -16,7 +16,7 @@ namespace TDTU.API.Controllers
 		[HttpGet("pagination")]
 		public async Task<IActionResult> Pagination([FromQuery] PaginationRequest request)
 		{
-			request.Id = GetUserId();
+			request.UserId = GetUserId();
 			var data = await _service.GetPagination(request);
 			var response = Result<PaginatedList<StudentProfileDto>>.Success(data);
 			return Ok(response);

@@ -6,7 +6,7 @@ namespace TDTU.API.Interfaces;
 public interface IRegularJobApplicationService
 {
 	Task<RegularJobApplicationDto> ApplyJob(RegularJobApplyRequest request);
-	Task<PaginatedList<RegularJobApplicationDto>> JobApplications(PaginationRequest request);
+	Task<PaginatedList<RegularJobApplicationDto>> JobApplications(PaginationRequest request, Guid id);
 	Task<PaginatedList<RegularJobApplicationDto>> UserHistory(PaginationRequest request);
 	Task<RegularJobApplicationDto> GetById(Guid id);
 	Task<bool> DeleteByIds(DeleteRequest request);

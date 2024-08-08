@@ -105,12 +105,12 @@ public class RegularJobApplicationService : IRegularJobApplicationService
 		return data;
 	}
 
-	public async Task<PaginatedList<RegularJobApplicationDto>> JobApplications(PaginationRequest request)
+	public async Task<PaginatedList<RegularJobApplicationDto>> JobApplications(PaginationRequest request, Guid id)
 	{
-		if (request.Id == null) throw new ApplicationException("Không tìm thấy Id doanh nghiệp");
+		if (request.UserId == null) throw new ApplicationException("Không tìm thấy Id doanh nghiệp");
 
 		var query = _context.RegularJobApplications.Include(s => s.Job)
-							.Where(m => m.DeleteFlag == false && m.JobId == request.Id)
+							.Where(m => m.DeleteFlag == false && m.JobId == id)
 							.OrderByDescending(x => x.CreatedDate)
 							.ProjectTo<RegularJobApplicationDto>(_mapper.ConfigurationProvider);
 
@@ -128,10 +128,10 @@ public class RegularJobApplicationService : IRegularJobApplicationService
 
 	public async Task<PaginatedList<RegularJobApplicationDto>> UserHistory(PaginationRequest request)
 	{
-		if (request.Id == null) throw new ApplicationException("Không tìm thấy Id doanh nghiệp");
+		if (request.UserId == null) throw new ApplicationException("Không tìm thấy Id doanh nghiệp");
 
 		var query = _context.RegularJobApplications.Include(s => s.Job)
-							.Where(m => m.DeleteFlag == false && m.StudentId == request.Id)
+							.Where(m => m.DeleteFlag == false && m.StudentId == request.UserId)
 							.OrderByDescending(x => x.CreatedDate)
 							.ProjectTo<RegularJobApplicationDto>(_mapper.ConfigurationProvider);
 

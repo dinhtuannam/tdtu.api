@@ -118,9 +118,9 @@ public class InternshipJobService : IInternshipJobService
 			query = query.Where(x => x.Name.ToLower().Contains(text));
 		}
 
-		if (request.Id != null && request.Id != Guid.Empty)
+		if (request.UserId != null && request.UserId != Guid.Empty)
 		{
-			query = query.Where(x => x.CompanyId == request.Id);
+			query = query.Where(x => x.CompanyId == request.UserId);
 		}
 
 		if (request.TermId != null && request.TermId != Guid.Empty)
@@ -159,9 +159,9 @@ public class InternshipJobService : IInternshipJobService
 			query = query.Where(x => x.InternshipTermId == request.TermId);
 		}
 
-		if (request.Id != null && request.Id != Guid.Empty)
+		if (request.UserId != null && request.UserId != Guid.Empty)
 		{
-			query = query.Where(x => x.CompanyId == request.Id);
+			query = query.Where(x => x.CompanyId == request.UserId);
 		}
 
 		PaginatedList<InternshipJobDto> paging = await query.PaginatedListAsync(request.PageIndex, request.PageSize);

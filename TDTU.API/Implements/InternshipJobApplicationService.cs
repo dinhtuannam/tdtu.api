@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using TDTU.API.Dtos.InternshipJobApplicationDTO;
+using TDTU.API.Models.InternshipJobApplicationModel;
 
 namespace TDTU.API.Implements;
 
@@ -59,5 +61,35 @@ public class InternshipJobApplicationService : IInternshipJobApplicationService
 			throw new ApplicationException($"Không tìm thấy công ty với Id: {id}");
 		}
 		return company;
+	}
+
+	public Task<InternshipJobApplicationDto> Apply(InternshipJobApply request)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<InternshipJobApplicationDto> SetStatus(InternshipJobSetStatus request)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<PaginatedList<InternshipJobApplicationDto>> UserHistory(PaginationRequest request)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<PaginatedList<InternshipJobApplicationDto>> JobApplications(PaginationRequest request)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<InternshipJobApplicationDto> GetById(Guid id)
+	{
+		throw new NotImplementedException();
+	}
+
+	public Task<bool> DeleteByIds(DeleteRequest request)
+	{
+		throw new NotImplementedException();
 	}
 }
