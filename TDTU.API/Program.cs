@@ -111,6 +111,7 @@ namespace TDTU.API
 			builder.Services.AddScoped<IRegularJobApplicationService, RegularJobApplicationService>();
 			builder.Services.AddScoped<IInternshipJobApplicationService, InternshipJobApplicationService>();
 			builder.Services.AddScoped<ISkillService, SkillService>();
+			builder.Services.AddScoped<IInternshipTermService, InternshipTermService>();
 			builder.Services.AddScoped<IStudentService, StudentService>();
 			builder.Services.AddScoped<IStudentProfileService, StudentProfileService>();
 			builder.Services.AddScoped<IStorageService, StorageService>();

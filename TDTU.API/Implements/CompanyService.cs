@@ -117,6 +117,7 @@ public class CompanyService : ICompanyService
 	{
 		var user = new User()
 		{
+			Password = "123456",
 			Email = request.Email,
 			Address = request.Address ?? "",
 			Phone = request.Phone ?? "",
